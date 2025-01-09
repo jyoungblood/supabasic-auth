@@ -1,0 +1,121 @@
+---
+import Layout from "../layouts/Layout.astro";
+export const prerender = false;
+---
+
+<Layout title="Register">
+  <div class="flex flex-col items-center justify-center flex-1">
+    <div id="registerContainer" class="w-full max-w-sm">
+      <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
+      <p class="mb-6 text-center">Already have an account? <a href="/login">Log in</a></p>
+      <form class="w-full" id="registerForm">
+        <div class="flex flex-col mb-4">
+          <label for="email" class="mb-2 text-sm font-semibold">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            class="p-2 border rounded-md mb-4"
+          />
+        </div>
+        <div class="flex flex-col mb-4">
+          <label for="password" class="mb-2 text-sm font-semibold">Password</label
+          >
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            class="p-2 border rounded-md mb-4"
+          />
+        </div>
+        <button
+          type="submit"
+          id="submitButton"
+          class="bg-black text-white p-3 text-sm font-semibold rounded-md mb-6 hover:bg-gray-800 cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          <span id="buttonText">Register</span>
+          <svg
+            id="loadingSpinner"
+            class="hidden w-5 h-5 ml-2 animate-spin"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+              fill="none"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    <div id="verifyEmailContainer" class="hidden w-full max-w-sm">
+      <h1 class="text-2xl font-bold mb-6">Verify your email</h1>
+      <p class="mb-6">
+        We've sent a verification email to your inbox. Please check your email and
+        click the link to verify your account.
+      </p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const form = document.getElementById("registerForm");
+  const submitButton = document.getElementById("submitButton");
+  const buttonText = document.getElementById("buttonText");
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  const registerContainer = document.getElementById("registerContainer");
+  const verifyEmailContainer = document.getElementById("verifyEmailContainer");
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    // Disable button and show loading state
+    submitButton.disabled = true;
+    buttonText.textContent = "Registering...";
+    loadingSpinner.classList.remove("hidden");
+
+    const formData = new FormData(event.target);
+
+    fetch("/api/auth/register", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) =>
+        response.json().then((data) => ({
+          status: response.ok,
+          data: data,
+        }))
+      )
+      .then(({ status, data }) => {
+        if (!status) {
+          throw new Error(data.error || "An unexpected error occurred");
+        }
+        
+        if (data.success) {
+          window.location.href = "/dashboard";
+        } else {
+          // Show verification message
+          registerContainer.classList.add("hidden");
+          verifyEmailContainer.classList.remove("hidden");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        submitButton.disabled = false;
+        buttonText.textContent = "Register";
+        loadingSpinner.classList.add("hidden");
+        window.location.href = `/register?error=${encodeURIComponent(error.message)}`;
+      });
+  });
+</script>

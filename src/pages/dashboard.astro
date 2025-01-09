@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { isAuthenticated, getUserId } from "../utils/auth.server";
+import { supabase } from "../lib/supabase";
+
+// Check authentication using the shared utility function
+if (!isAuthenticated(Astro.cookies)) {
+  return Astro.redirect("/login");
+}
+
+// Get the email using the same method as Layout
+const userId = await getUserId(Astro.cookies);
+---
+
+<Layout title="Dashboard">
+  <div class="flex flex-col items-center justify-center flex-1">
+    <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+    <p>Welcome to the dashboard, {userId}</p>
+  </div>
+</Layout>

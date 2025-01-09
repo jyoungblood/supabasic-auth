@@ -1,0 +1,75 @@
+---
+import { isAuthenticated, getUserEmail } from '../utils/auth.server';
+
+// Get props and set up auth state
+const { title } = Astro.props;
+const authenticated = isAuthenticated(Astro.cookies);
+// Replace the cookie-based email with the Supabase user email
+const userEmail = authenticated ? await getUserEmail(Astro.cookies) : null;
+
+// Get site title from environment variable
+const siteTitle = import.meta.env.SITE_TITLE;
+
+// Construct the full page title
+const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+
+// Make authenticated state available to all pages using this layout
+Astro.props.authenticated = authenticated;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{pageTitle}</title>
+	</head>
+	<body>
+    <div class="parent h-screen flex flex-col max-w-7xl mx-auto">    
+    <header>
+      <nav class="flex justify-between items-center p-4 h-16">
+        <div class="flex items-center">
+          {authenticated ? (
+            <a class="text-3xl font-semibold mr-4" href="/dashboard">💽</a>
+          ) : (
+            <a class="text-3xl font-semibold mr-4" href="/">💽</a>
+          )}
+        </div>
+        <div class="flex items-center">
+          {authenticated ? (
+            <span class="mr-4 text-sm text-black font-semibold">{userEmail}</span>
+            <a class="border-2 border-black text-black py-2 px-4 text-sm font-semibold rounded-md hover:bg-gray-50 cursor-pointer" href="/api/auth/logout">Log out</a>
+          ) : (
+            <>
+              <a class="border-2 border-black text-black py-2 px-4 text-sm font-semibold rounded-md hover:bg-gray-50 cursor-pointer ml-3 inline-block" href="/login">Log in</a>
+              <a class="border-2 border-black text-black py-2 px-4 text-sm font-semibold rounded-md hover:bg-gray-50 cursor-pointer ml-3 inline-block" href="/register">Register</a>
+            </>
+          )}
+        </div>
+      </nav>
+    </header>
+    <main class="flex-1 flex p-3">
+      <slot />
+    </main>
+    <footer class="flex justify-between text-xs text-right p-3">
+      <div class="">
+        &copy; {new Date().getFullYear()} {siteTitle}. 
+      </div>
+      <div class="">
+        All rights reserved.
+      </div>
+    </footer>
+  </div>
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
