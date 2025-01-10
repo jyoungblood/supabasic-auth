@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { isAuthenticated } from '../utils/auth.server';
+import { isAuthenticated } from "../utils/auth.server";
 
 export const prerender = false;
 
@@ -17,81 +17,114 @@ const error = url.searchParams.get("error");
 
 <Layout title="Log in">
   <div class="flex flex-col items-center justify-center flex-1 p-4">
-    {success && (
-      <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
-        Email verified successfully! Please log in to continue.
-      </div>
-    )}
-    {error && (
-      <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-        {decodeURIComponent(error)}
-      </div>
-    )}
-    <h1 class="text-2xl font-bold mb-6">Log in</h1>
-    <p class="mb-6">New here? <a href="/register">Create an account</a></p>
-    <form 
-      class="w-full max-w-sm"
-      id="loginForm"
-    >
-      <div class="flex flex-col mb-4">
-        <label for="email" class="mb-2 text-sm font-semibold">Email</label>
-        <input 
-          type="email" 
-          name="email" 
-          id="email" 
-          required
-          class="p-2 border rounded-md mb-4" 
-        />
-      </div>
-      <div class="flex flex-col mb-4">
-        <label for="password" class="mb-2 text-sm font-semibold">Password</label>
-        <input 
-          type="password" 
-          name="password" 
-          id="password" 
-          required
-          class="p-2 border rounded-md mb-4" 
-        />
-      </div>
-      <button 
-        type="submit" 
-        id="submitButton"
-        class="bg-black text-white p-3 text-sm font-semibold rounded-md mb-6 hover:bg-gray-800 cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+    {
+      success && (
+        <div class="mb-6 p-4 bg-green-100 border border-green-300 text-green-700 rounded-md text-center w-full max-w-sm">
+          <p class="font-semibold mb-1">{decodeURIComponent(success)}</p>
+          <p class="text-sm">Please log in to continue</p>
+        </div>
+      )
+    }
+
+    <h1 class="text-2xl font-bold mb-2 text-center">Log In</h1>
+    <p class="mb-6 text-sm text-center">
+      Don't have an account? <a
+        href="/register"
+        class="underline hover:no-underline">Register</a
       >
-        <span id="buttonText">Login</span>
-        <svg id="loadingSpinner" class="hidden w-5 h-5 ml-2 animate-spin" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </button>
-    </form>
+    </p>
+    <div class="w-full max-w-sm">
+      <form class="border border-gray-200 p-8 rounded-md mb-4" id="loginForm">
+        <div class="flex flex-col mb-4">
+          <label for="email" class="mb-2 text-sm font-semibold">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            class="p-2 border border-gray-400 rounded-md mb-4"
+          />
+        </div>
+        <div class="flex flex-col mb-4">
+          <label for="password" class="mb-2 text-sm font-semibold"
+            >Password</label
+          >
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            class="p-2 border border-gray-400 rounded-md mb-4"
+          />
+        </div>
+        <button
+          type="submit"
+          id="submitButton"
+          class="bg-black text-white p-3 text-sm font-semibold rounded-md hover:bg-gray-800 cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+        >
+          <span id="buttonText">Log In</span>
+          <svg
+            id="loadingSpinner"
+            class="hidden w-5 h-5 ml-2 animate-spin"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+              fill="none"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </button>
+
+        {
+          error && (
+            <div class="mt-4 text-red-700 text-sm font-semibold text-center">
+              {decodeURIComponent(error)}
+            </div>
+          )
+        }
+      </form>
+      <div class="text-center text-xs">
+        <a href="/auth/forgot-password" class="underline hover:no-underline"
+          >Forgot Password?</a
+        >
+      </div>
+    </div>
   </div>
 </Layout>
 
 <script>
-  const form = document.getElementById('loginForm');
-  const submitButton = document.getElementById('submitButton');
-  const buttonText = document.getElementById('buttonText');
-  const loadingSpinner = document.getElementById('loadingSpinner');
+  const form = document.getElementById("loginForm");
+  const submitButton = document.getElementById("submitButton");
+  const buttonText = document.getElementById("buttonText");
+  const loadingSpinner = document.getElementById("loadingSpinner");
 
-  form.addEventListener('submit', function(event) {
+  form.addEventListener("submit", function (event) {
     event.preventDefault();
-    
+
     // Disable button and show loading state
     submitButton.disabled = true;
-    buttonText.textContent = 'Logging in...';
-    loadingSpinner.classList.remove('hidden');
-    
+    buttonText.textContent = "Logging in...";
+    loadingSpinner.classList.remove("hidden");
+
     const formData = new FormData(event.target);
 
-    fetch('/api/auth/login', {
-      method: 'POST',
-      body: formData
+    fetch("/api/auth/login", {
+      method: "POST",
+      body: formData,
     })
-      .then(response => 
-        response.json().then(data => ({
+      .then((response) =>
+        response.json().then((data) => ({
           status: response.ok,
-          data: data
+          data: data,
         }))
       )
       .then(({ status, data }) => {
@@ -99,11 +132,11 @@ const error = url.searchParams.get("error");
           window.location.href = `/login?error=${encodeURIComponent(data.error)}`;
           return;
         }
-        window.location.href = '/dashboard';
+        window.location.href = "/dashboard";
       })
-      .catch(error => {
-        console.error('Error:', error);
-        window.location.href = `/login?error=${encodeURIComponent('An unexpected error occurred')}`;
+      .catch((error) => {
+        console.error("Error:", error);
+        window.location.href = `/login?error=${encodeURIComponent("An unexpected error occurred")}`;
       });
   });
 </script>
