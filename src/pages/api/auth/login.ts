@@ -37,9 +37,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     // Set cookies and return success response
     cookies.set("sb-access-token", data.session.access_token, {
       path: "/",
+      secure: true,
+      httpOnly: true,
     });
     cookies.set("sb-refresh-token", data.session.refresh_token, {
       path: "/",
+      secure: true,
+      httpOnly: true,
     });
 
     return new Response(
