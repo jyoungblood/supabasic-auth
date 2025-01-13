@@ -37,12 +37,14 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   // Set session cookies
   cookies.set("sb-access-token", data.session.access_token, {
     path: "/",
-    secure: true,
+    sameSite: process.env.COOKIE_SAMESITE as "lax" | "strict" | "none",
+    secure: process.env.COOKIE_SECURE === "true",
     httpOnly: true,
   });
   cookies.set("sb-refresh-token", data.session.refresh_token, {
     path: "/",
-    secure: true,
+    sameSite: process.env.COOKIE_SAMESITE as "lax" | "strict" | "none",
+    secure: process.env.COOKIE_SECURE === "true",
     httpOnly: true,
   });
 

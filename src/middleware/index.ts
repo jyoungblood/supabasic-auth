@@ -77,14 +77,16 @@ export const onRequest = defineMiddleware(
       
       // Update tokens
       cookies.set("sb-access-token", data?.session?.access_token!, {
-        sameSite: "strict",
+        sameSite: process.env.COOKIE_SAMESITE as "lax" | "strict" | "none",
         path: "/",
-        secure: true,
+        secure: process.env.COOKIE_SECURE === "true",
+        httpOnly: true,
       });
       cookies.set("sb-refresh-token", data?.session?.refresh_token!, {
-        sameSite: "strict",
+        sameSite: process.env.COOKIE_SAMESITE as "lax" | "strict" | "none",
         path: "/",
-        secure: true,
+        secure: process.env.COOKIE_SECURE === "true",
+        httpOnly: true,
       });
     }
 
