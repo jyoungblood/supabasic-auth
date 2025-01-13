@@ -1,40 +1,98 @@
 ---
 import Layout from "../layouts/Layout.astro";
-// import { isAuthenticated } from '../utils/auth.server';
-
-// if (isAuthenticated(Astro.cookies)) {
-//   return Astro.redirect("/dashboard");
-// }
 ---
 
 <Layout title="Hello">
   <div class="flex flex-col items-center justify-center flex-1">
-    <h1 class="text-2xl font-bold mb-12">No ceremonies are necessary.</h1>
+    <div class="flex flex-row items-center justify-center gap-16">
+      <svg
+        class="h-20 w-20"
+        viewBox="0 0 64 79"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g clip-path="url(#clip0_831_2294)">
+          <path
+            d="M19.9924 65.9282C16.1165 62.432 14.9851 55.0859 16.5999 49.7638C19.3998 53.1193 23.2793 54.1822 27.2977 54.7822C33.5013 55.7081 39.5937 55.3618 45.3565 52.5637C46.0158 52.2434 46.625 51.8174 47.3454 51.386C47.8861 52.9341 48.0268 54.497 47.838 56.0877C47.3787 59.9617 45.4251 62.9542 42.3177 65.2227C41.0752 66.13 39.7604 66.9411 38.4771 67.7967C34.5346 70.4262 33.4679 73.5095 34.9494 77.9946C34.9846 78.1038 35.0161 78.2131 35.0957 78.4797C33.0828 77.5909 31.6124 76.2965 30.4921 74.5946C29.3088 72.7984 28.7458 70.8114 28.7162 68.6615C28.7014 67.6152 28.7014 66.5597 28.5588 65.5282C28.2107 63.0135 27.0144 61.8876 24.7608 61.8227C22.4479 61.7561 20.6183 63.1672 20.1331 65.3893C20.0961 65.5597 20.0424 65.7282 19.9887 65.9263L19.9924 65.9282Z"
+            fill="url(#paint0_linear_831_2294)"></path>
+          <path
+            class="fill-black dark:fill-white"
+            d="M0.5 51.3932C0.5 51.3932 11.0979 46.2433 21.7254 46.2433L29.7382 21.5069C30.0381 20.3106 30.9141 19.4977 31.9029 19.4977C32.8918 19.4977 33.7677 20.3106 34.0677 21.5069L42.0804 46.2433C54.6672 46.2433 63.3058 51.3932 63.3058 51.3932C63.3058 51.3932 45.3044 2.47586 45.2692 2.37772C44.7526 0.931458 43.8804 0 42.7045 0H21.1032C19.9273 0 19.0903 0.931458 18.5384 2.37772C18.4995 2.47401 0.5 51.3932 0.5 51.3932Z"
+          ></path>
+        </g>
+        <defs>
+          <linearGradient
+            id="paint0_linear_831_2294"
+            x1="15.8877"
+            y1="78.4797"
+            x2="53.1292"
+            y2="60.6489"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#D83333"></stop>
+            <stop offset="1" stop-color="#F041FF"></stop>
+          </linearGradient>
+          <clipPath id="clip0_831_2294">
+            <rect width="64" height="79" fill="white"></rect>
+          </clipPath>
+        </defs>
+      </svg>
 
-    <div class="flex flex-row items-center justify-center gap-20">
       <svg
-        stroke="currentColor"
-        fill="currentColor"
-        stroke-width="0"
-        role="img"
-        viewBox="0 0 24 24"
+        class="h-20 w-20"
+        viewBox="0 0 109 113"
+        fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        class="w-12 h-12 text-gray-300"
-        ><path
-          d="M8.358 20.162c-1.186-1.07-1.532-3.316-1.038-4.944.856 1.026 2.043 1.352 3.272 1.535 1.897.283 3.76.177 5.522-.678.202-.098.388-.229.608-.36.166.473.209.95.151 1.437-.14 1.185-.738 2.1-1.688 2.794-.38.277-.782.525-1.175.787-1.205.804-1.531 1.747-1.078 3.119l.044.148a3.158 3.158 0 0 1-1.407-1.188 3.31 3.31 0 0 1-.544-1.815c-.004-.32-.004-.642-.048-.958-.106-.769-.472-1.113-1.161-1.133-.707-.02-1.267.411-1.415 1.09-.012.053-.028.104-.045.165h.002zm-5.961-4.445s3.24-1.575 6.49-1.575l2.451-7.565c.092-.366.36-.614.662-.614.302 0 .57.248.662.614l2.45 7.565c3.85 0 6.491 1.575 6.491 1.575L16.088.727C15.93.285 15.663 0 15.303 0H8.697c-.36 0-.615.285-.784.727l-5.516 14.99z"
-        ></path></svg
       >
-      <svg
-        stroke="currentColor"
-        fill="currentColor"
-        stroke-width="0"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-        class="w-12 h-12 text-gray-300"
-        ><path
-          d="M3.08378 15.25C1.42044 15.25 0.483971 13.3378 1.5038 12.0237L10.2099 0.806317C10.794 0.053716 11.9999 0.466765 11.9999 1.41944V8.74999H20.9159C22.5793 8.74999 23.5157 10.6622 22.4959 11.9762L13.7898 23.1937C13.2057 23.9463 11.9999 23.5332 11.9999 22.5805V15.25H3.08378Z"
-        ></path></svg
-      >
+        <path
+          d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z"
+          fill="url(#paint0_linear)"></path>
+        <path
+          d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z"
+          fill="url(#paint1_linear)"
+          fill-opacity="0.2"></path>
+        <path
+          d="M45.317 2.07103C48.1765 -1.53037 53.9745 0.442937 54.0434 5.041L54.4849 72.2922H9.83113C1.64038 72.2922 -2.92775 62.8321 2.1655 56.4175L45.317 2.07103Z"
+          fill="#3ECF8E"></path>
+        <defs>
+          <linearGradient
+            id="paint0_linear"
+            x1="53.9738"
+            y1="54.974"
+            x2="94.1635"
+            y2="71.8295"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#249361"></stop>
+            <stop offset="1" stop-color="#3ECF8E"></stop>
+          </linearGradient>
+          <linearGradient
+            id="paint1_linear"
+            x1="36.1558"
+            y1="30.578"
+            x2="54.4844"
+            y2="65.0806"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop></stop>
+            <stop offset="1" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
+      </svg>
     </div>
+
+
+
+    <br /><br /><br />
+    {
+      Astro.locals.isAuthenticated ? (
+        <p>You are logged in 🤠</p>
+      ) : (
+        <p>
+          You are <b>NOT</b> logged in 😭
+        </p>
+      )
+    }
+    <p><a href="/dashboard">Dashboard</a> | <a href="/login">Login</a></p>
   </div>
 </Layout>

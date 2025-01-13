@@ -1,23 +1,9 @@
 ---
-import { isAuthenticated, getUserEmail } from "../utils/auth.server";
-
-// Get props and set up auth state
 const { title } = Astro.props;
-const authenticated = isAuthenticated(Astro.cookies);
-// Replace the cookie-based email with the Supabase user email
-const userEmail = authenticated ? await getUserEmail(Astro.cookies) : null;
-
-// Add this line to get the current path
 const currentPath = Astro.url.pathname;
-
-// Get site title from environment variable
 const siteTitle = import.meta.env.SITE_TITLE;
-
-// Construct the full page title
 const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
 
-// Make authenticated state available to all pages using this layout
-Astro.props.authenticated = authenticated;
 ---
 
 <!doctype html>
@@ -50,9 +36,9 @@ Astro.props.authenticated = authenticated;
           </div>
           <div class="text-xs">
             {
-              authenticated ? (
+              Astro.locals.isAuthenticated ? (
                 <>
-                  <span class="">{userEmail}</span>
+                  <span class="">{Astro.locals.email}</span>
                   <span class="opacity-50 mx-2">|</span>
                   <a
                     class="text-xs no-underline hover:underline"
