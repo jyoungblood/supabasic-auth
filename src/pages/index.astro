@@ -1,5 +1,19 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+
+// import { createClient } from "../lib/supabase";
+
+// const supabase = createClient.astro(Astro.request);
+
+// const { data: countries, error: countriesError } = await supabase
+//   .from("countries_demo")
+//   .select("*");
+
+// if (countriesError) {
+//   console.error("Error fetching countries:", countriesError);
+// }
+
 ---
 
 <Layout title="Hello">
@@ -82,17 +96,32 @@ import Layout from "../layouts/Layout.astro";
     </div>
 
 
-
-    <br /><br /><br />
     {
-      Astro.locals.isAuthenticated ? (
-        <p>You are logged in 🤠</p>
-      ) : (
-        <p>
-          You are <b>NOT</b> logged in 😭
-        </p>
-      )
+      // Astro.locals.isAuthenticated ? (
+      //   <br /><br /><br />
+      //   <p>You are logged in 🤠</p>
+      // ) : (
+      //   <br /><br /><br />
+      //   <p>
+      //     You are <b>NOT</b> logged in 🫤
+      //   </p>
+      // )
     }
-    <p><a href="/dashboard">Dashboard</a> | <a href="/login">Login</a></p>
+
+    {
+      // countries && (
+      //   <div class="mt-8">
+      //     <h2 class="text-lg font-semibold mb-3">Countries List Demo</h2>
+      //     {countriesError && (
+      //       <p class="text-red-500">Error loading countries</p>
+      //     )}
+      //     <ul class="list-disc pl-5">
+      //       {countries?.map((country) => (
+      //         <li class="text-sm mb-1">{country.name}</li>
+      //       ))}
+      //     </ul>
+      //   </div>
+      // )
+    }
   </div>
 </Layout>

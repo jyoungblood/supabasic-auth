@@ -1,10 +1,12 @@
 // With `output: 'static'` configured:
 // export const prerender = false;
-import { supabase } from "../../../lib/supabase";
 import type { APIRoute } from "astro";
+import { createClient } from "../../../lib/supabase";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, cookies }) => {
   try {
+    const supabase = createClient.server(cookies);
+    
     const formData = await request.formData();
     const email = formData.get("email")?.toString();
 

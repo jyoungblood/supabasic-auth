@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import { supabase } from "../lib/supabase";
+import { createClient, setAuthCookies } from "../lib/supabase";
 
 // Define routes as simple strings
 const protectedRoutes = ['/dashboard'];
@@ -16,7 +16,7 @@ export const onRequest = defineMiddleware(
     const refreshToken = cookies.get("sb-refresh-token");
 
     if (accessToken && refreshToken) {
-      const { data, error } = await supabase.auth.setSession({
+      const { data, error } = await createClient.server(cookies).auth.setSession({
         refresh_token: refreshToken.value,
         access_token: accessToken.value,
       });
@@ -52,7 +52,7 @@ export const onRequest = defineMiddleware(
         }
       }
 
-      const { data, error } = await supabase.auth.setSession({
+      const { data, error } = await createClient.server(cookies).auth.setSession({
         refresh_token: refreshToken.value,
         access_token: accessToken.value,
       });
@@ -76,17 +76,9 @@ export const onRequest = defineMiddleware(
       locals.userId = data.user?.id!;
       
       // Update tokens
-      cookies.set("sb-access-token", data?.session?.access_token!, {
-        sameSite: process.env.COOKIE_SAMESITE as "lax" | "strict" | "none",
-        path: "/",
-        secure: process.env.COOKIE_SECURE === "true",
-        httpOnly: true,
-      });
-      cookies.set("sb-refresh-token", data?.session?.refresh_token!, {
-        sameSite: process.env.COOKIE_SAMESITE as "lax" | "strict" | "none",
-        path: "/",
-        secure: process.env.COOKIE_SECURE === "true",
-        httpOnly: true,
+      setAuthCookies(cookies, {
+        access_token: data?.session?.access_token!,
+        refresh_token: data?.session?.refresh_token!
       });
     }
 

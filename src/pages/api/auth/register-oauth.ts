@@ -1,33 +1,18 @@
 // With `output: 'static'` configured:
 // export const prerender = false;
 import type { Provider } from "@supabase/supabase-js";
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import type { APIRoute } from "astro";
+import { createClient } from "../../../lib/supabase";
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
+    // Create server-side Supabase client with cookies
+    const supabase = createClient.server(cookies);
+    
     const formData = await request.formData();
     const provider = formData.get("provider")?.toString();
 
     if (provider) {
-      const supabase = createServerClient(
-        import.meta.env.SUPABASE_URL,
-        import.meta.env.SUPABASE_ANON_KEY,
-        {
-          cookies: {
-            get(key: string) {
-              return cookies.get(key)?.value
-            },
-            set(key: string, value: string, options: CookieOptions) {
-              cookies.set(key, value, options)
-            },
-            remove(key: string, options: CookieOptions) {
-              cookies.delete(key, options)
-            },
-          },
-        }
-      )
-
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider as Provider,
         options: {

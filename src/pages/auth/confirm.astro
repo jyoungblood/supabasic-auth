@@ -1,8 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { supabase } from "../../lib/supabase";
+import { createClient } from "../../lib/supabase";
 
 export const prerender = false;
+
+const supabase = createClient.server(Astro.cookies);
 
 const { url, redirect } = Astro;
 
@@ -13,9 +15,9 @@ const type = url.searchParams.get("type");
 let error = null;
 
 if (token_hash && type) {
-  const { error: verificationError } = await supabase.auth.verifyOtp({
+  const { data, error: verificationError } = await supabase.auth.verifyOtp({
     token_hash,
-    type: "email",
+    type: "signup",
   });
 
   if (!verificationError) {
