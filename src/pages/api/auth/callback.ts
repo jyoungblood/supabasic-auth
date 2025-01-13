@@ -6,7 +6,12 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   const code = requestUrl.searchParams.get('code')
 
   if (!code) {
-    return redirect(`/auth/auth-error?error=${encodeURIComponent('Authentication code missing from provider. Please try logging in again.')}`)
+    return new Response(JSON.stringify({ 
+      error: 'Authentication code missing from provider. Please try logging in again.' 
+    }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    })
   }
 
   const supabase = createClient.server(cookies)
@@ -15,7 +20,12 @@ export const GET: APIRoute = async ({ request, cookies, redirect }) => {
   
   if (error) {
     console.error('Error exchanging code for session:', error)
-    return redirect(`/auth/auth-error?error=${encodeURIComponent(error.message || 'Unknown error occurred')}`)
+    return new Response(JSON.stringify({ 
+      error: error.message || 'Unknown error occurred' 
+    }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    })
   }
 
   setAuthCookies(cookies, data.session)
