@@ -3,8 +3,8 @@ import type { AstroCookies } from 'astro'
 
 const COOKIE_OPTIONS = {
   path: "/",
-  sameSite: process.env.COOKIE_SAMESITE as "lax" | "strict" | "none",
-  secure: process.env.COOKIE_SECURE === "true",
+  sameSite: "lax",
+  secure: true,
   httpOnly: true,
 } as const;
 
