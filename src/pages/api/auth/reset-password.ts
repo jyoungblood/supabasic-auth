@@ -1,14 +1,17 @@
-import type { APIRoute } from "astro";
 import { createClient } from "../../../lib/supabase";
+import type { APIRoute } from "astro";
 
+// API endpoint to handle password reset after user clicks email link
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
+    // Initialize Supabase client with server-side configuration
     const supabase = createClient.server(cookies);
     
+    // Extract new password and token from form data
     const formData = await request.formData();
     const password = formData.get("password")?.toString();
-    const token_hash = formData.get("token_hash")?.toString();
 
+    // Validate password presence
     if (!password) {
       return new Response(
         JSON.stringify({ error: "Password is required" }), 
@@ -19,10 +22,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       );
     }
 
+    // Update user's password in Supabase
     const { error } = await supabase.auth.updateUser({
       password: password,
     });
 
+    // Handle password update errors
     if (error) {
       console.error(error.message);
       return new Response(

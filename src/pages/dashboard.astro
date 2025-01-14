@@ -1,16 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
+
+// EXAMPLE - Get user details from auth.users using the Astro-specific server client
+
 import { createClient } from "../lib/supabase";
 
-const supabase = createClient.astro(Astro.request);
+const supabase = createClient.astro(Astro);
 
-// Get user details from auth.users
 const { data: user, error } = await supabase.auth.getUser();
 
 if (error) {
   console.error("Error fetching user:", error);
 }
-
 ---
 
 <Layout title="Dashboard">
@@ -22,7 +23,9 @@ if (error) {
       {
         user && (
           <div class="">
-            <pre class="text-xs mt-6 overflow-x-auto">{JSON.stringify(user.user, null, 2)}</pre>
+            <pre class="text-xs mt-6 overflow-x-auto">
+              {JSON.stringify(user.user, null, 2)}
+            </pre>
           </div>
         )
       }

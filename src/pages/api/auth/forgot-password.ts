@@ -1,15 +1,17 @@
-// With `output: 'static'` configured:
-// export const prerender = false;
-import type { APIRoute } from "astro";
 import { createClient } from "../../../lib/supabase";
+import type { APIRoute } from "astro";
 
+// API endpoint to handle password reset requests
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
+    // Initialize Supabase client with server-side configuration
     const supabase = createClient.server(cookies);
     
+    // Extract email from form submission
     const formData = await request.formData();
     const email = formData.get("email")?.toString();
 
+    // Validate email presence
     if (!email) {
       return new Response(
         JSON.stringify({ error: "Email is required" }), 
@@ -20,10 +22,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       );
     }
 
+    // Send password reset email via Supabase
+    // redirectTo specifies where to send the user after they click the reset link
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${request.headers.get("origin")}/auth/callback?redirect_to=/dashboard/reset-password`,
     });
 
+    // Handle any errors from the password reset attempt
     if (error) {
       console.error(error.message);
       return new Response(

@@ -1,97 +1,77 @@
-import { defineMiddleware } from "astro:middleware";
 import { createClient, setAuthCookies } from "../lib/supabase";
+import { defineMiddleware } from "astro:middleware";
+import type { AstroCookies } from "astro";
 
-// Define routes as simple strings
+// Define protected and redirect routes
 const protectedRoutes = ['/dashboard'];
 const redirectRoutes = ['/login', '/register'];
-const protectedAPIRoutes = ['/api/guestbook'];
+
+// Helper function to check if path matches any pattern in the array
+const matchesAny = (path: string, routes: string[]) => 
+  routes.some(route => {
+    const pattern = new RegExp(`^${route}\/?$`);
+    return pattern.test(path);
+  });
+
+// Helper function to check and validate session
+const validateSession = async (
+  cookies: AstroCookies,
+  accessToken?: string, 
+  refreshToken?: string
+) => {
+  if (!accessToken || !refreshToken) return null;
+  
+  const { data, error } = await createClient.server(cookies).auth.setSession({
+    refresh_token: refreshToken,
+    access_token: accessToken,
+  });
+  
+  if (error) return null;
+  return data;
+};
+
+// Helper to set user data in locals
+const setUserData = (locals: App.Locals, data: any) => {
+  locals.isAuthenticated = true;
+  locals.email = data.user?.email!;
+  locals.userId = data.user?.id!;
+};
+
 
 export const onRequest = defineMiddleware(
   async ({ locals, url, cookies, redirect }, next) => {
-    // Initialize default state
+
     locals.isAuthenticated = false;
     
-    // Quick check for non-protected routes
-    const accessToken = cookies.get("sb-access-token");
-    const refreshToken = cookies.get("sb-refresh-token");
+    const accessToken = cookies.get("sb-access-token")?.value;
+    const refreshToken = cookies.get("sb-refresh-token")?.value;
 
-    if (accessToken && refreshToken) {
-      const { data, error } = await createClient.server(cookies).auth.setSession({
-        refresh_token: refreshToken.value,
-        access_token: accessToken.value,
-      });
-
-      if (!error) {
-        locals.isAuthenticated = true;
-        locals.email = data.user?.email!;
-        locals.userId = data.user?.id!;
-      }
+    // Try to validate session for all routes
+    const sessionData = await validateSession(cookies, accessToken, refreshToken);
+    if (sessionData) {
+      setUserData(locals, sessionData);
     }
 
-    // Helper function to check if path matches any pattern in the array
-    const matchesAny = (path: string, routes: string[]) => 
-      routes.some(route => {
-        // Convert route to regex pattern that matches with or without trailing slash
-        const pattern = new RegExp(`^${route}\/?$`);
-        return pattern.test(path);
-      });
-
-    // Check auth only for protected routes
-    if (matchesAny(url.pathname, [...protectedRoutes, ...protectedAPIRoutes])) {
-      const accessToken = cookies.get("sb-access-token");
-      const refreshToken = cookies.get("sb-refresh-token");
-
-      if (!accessToken || !refreshToken) {
-        if (matchesAny(url.pathname, protectedRoutes)) {
-          return redirect("/login");
-        } else {
-          return new Response(
-            JSON.stringify({ error: "Unauthorized" }),
-            { status: 401 }
-          );
-        }
-      }
-
-      const { data, error } = await createClient.server(cookies).auth.setSession({
-        refresh_token: refreshToken.value,
-        access_token: accessToken.value,
-      });
-
-      if (error) {
+    // Handle protected routes
+    if (matchesAny(url.pathname, protectedRoutes)) {
+      if (!sessionData) {
         cookies.delete("sb-access-token", { path: "/" });
         cookies.delete("sb-refresh-token", { path: "/" });
-        
-        if (matchesAny(url.pathname, protectedRoutes)) {
-          return redirect("/login");
-        } else {
-          return new Response(
-            JSON.stringify({ error: "Unauthorized" }),
-            { status: 401 }
-          );
-        }
+        return redirect("/login");
       }
 
-      locals.isAuthenticated = true;
-      locals.email = data.user?.email!;
-      locals.userId = data.user?.id!;
-      
-      // Update tokens
+      // Refresh cookies
       setAuthCookies(cookies, {
-        access_token: data?.session?.access_token!,
-        refresh_token: data?.session?.refresh_token!
+        access_token: sessionData.session?.access_token!,
+        refresh_token: sessionData.session?.refresh_token!
       });
     }
 
-    // Handle redirect routes (login/register)
-    if (matchesAny(url.pathname, redirectRoutes)) {
-      const accessToken = cookies.get("sb-access-token");
-      const refreshToken = cookies.get("sb-refresh-token");
-
-      if (accessToken && refreshToken) {
-        return redirect("/dashboard");
-      }
+    // Handle redirect routes
+    if (matchesAny(url.pathname, redirectRoutes) && sessionData) {
+      return redirect("/");
     }
 
     return next();
-  },
+  }
 );

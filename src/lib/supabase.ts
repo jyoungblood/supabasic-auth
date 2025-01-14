@@ -13,16 +13,17 @@ export function setAuthCookies(cookies: AstroCookies, session: { access_token: s
   cookies.set("sb-refresh-token", session.refresh_token, COOKIE_OPTIONS);
 }
 
-// Browser client - use this for client-side operations
 export const createClient = {
+
+  // Browser client - for client-side operations
   browser: () => {
     return createBrowserClient(
       import.meta.env.PUBLIC_SUPABASE_URL,
-      import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+      import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
     )
   },
   
-  // Server client with explicit cookies - use this for middleware/API routes
+  // Server client with explicit cookies - for middleware/API routes
   server: (cookies: AstroCookies) => {
     return createServerClient(
       import.meta.env.PUBLIC_SUPABASE_URL,
@@ -43,22 +44,19 @@ export const createClient = {
     )
   },
 
-  // Astro-specific server client - use this only in .astro files
-  astro: (request: Request) => {
+  // Astro-specific server client - for .astro components
+  astro: (Astro: any) => {
     return createServerClient(
       import.meta.env.PUBLIC_SUPABASE_URL,
       import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
           getAll() {
-            return parseCookieHeader(request.headers.get('Cookie') ?? '')
+            return parseCookieHeader(Astro.request.headers.get('Cookie') ?? '')
           },
           setAll(cookiesToSet) {
-            // Note: You'll need to handle setting cookies via Astro.cookies in the .astro file
-            cookiesToSet.forEach(({ name, value, options }) => {
-              // Can't set cookies here because no access to Astro.cookies
-              console.warn('Cookie setting not supported in this context. Use Astro.cookies in your .astro file.')
-            })
+            cookiesToSet.forEach(({ name, value, options }) =>
+              Astro.cookies.set(name, value, options))
           },
         },
       }

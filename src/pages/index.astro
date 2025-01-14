@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
+// EXAMPLE - Get content from a Supabase table using the Astro-specific server client
 
 // import { createClient } from "../lib/supabase";
 
@@ -13,10 +14,9 @@ import Layout from "../layouts/Layout.astro";
 // if (countriesError) {
 //   console.error("Error fetching countries:", countriesError);
 // }
-
 ---
 
-<Layout title="Hello">
+<Layout title="Astro & Supabase SSR Auth">
   <div class="flex flex-col items-center justify-center flex-1">
     <div class="flex flex-row items-center justify-center gap-16">
       <svg
@@ -95,7 +95,6 @@ import Layout from "../layouts/Layout.astro";
       </svg>
     </div>
 
-
     {
       // Astro.locals.isAuthenticated ? (
       //   <br /><br /><br />
@@ -109,6 +108,7 @@ import Layout from "../layouts/Layout.astro";
     }
 
     {
+      // for Astro server client example:
       // countries && (
       //   <div class="mt-8">
       //     <h2 class="text-lg font-semibold mb-3">Countries List Demo</h2>
@@ -123,5 +123,42 @@ import Layout from "../layouts/Layout.astro";
       //   </div>
       // )
     }
+
+    <!-- for browser client example: -->
+    <!-- 
+    <div class="mt-8" id="countries-container">
+      <h2 class="text-lg font-semibold mb-3">Countries List Demo</h2>
+      <div id="countries-list" class="list-disc pl-5"></div>
+    </div>
+    -->
+
   </div>
 </Layout>
+
+<script>
+  // EXAMPLE - Get content from a Supabase table using the browser client
+
+  // import { createClient } from "../lib/supabase";
+
+  // const supabase = createClient.browser();
+
+  // async function fetchCountries() {
+  //   const { data: countries, error } = await supabase
+  //     .from("countries_demo")
+  //     .select("*");
+
+  //   const countriesList = document.getElementById("countries-list");
+
+  //   if (error) {
+  //     countriesList.innerHTML = `<p class="text-red-500">Error loading countries</p>`;
+  //     console.error("Error fetching countries:", error);
+  //     return;
+  //   }
+
+  //   countriesList.innerHTML = countries
+  //     .map((country) => `<li class="text-sm mb-1">${country.name}</li>`)
+  //     .join("");
+  // }
+
+  // fetchCountries();
+</script>

@@ -38,7 +38,7 @@ const pageTitle = title ? `${title} | ${siteTitle}` : siteTitle;
             {
               Astro.locals.isAuthenticated ? (
                 <>
-                  <span class="">{Astro.locals.email}</span>
+                  <span class=""><a class="no-underline hover:underline" href="/dashboard">{Astro.locals.email}</a></span>
                   <span class="opacity-50 mx-2">|</span>
                   <a
                     class="text-xs no-underline hover:underline"

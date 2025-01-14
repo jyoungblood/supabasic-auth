@@ -1,17 +1,18 @@
-// With `output: 'static'` configured:
-// export const prerender = false;
 import { createClient, setAuthCookies } from "../../../lib/supabase";
 import type { APIRoute } from "astro";
 
+// API endpoint for email/password login
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    // Create server-side Supabase client with cookies
+    // Initialize Supabase client with server-side configuration
     const supabase = createClient.server(cookies);
     
+    // Extract login credentials from form data
     const formData = await request.formData();
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
 
+    // Validate required fields
     if (!email || !password) {
       return new Response(
         JSON.stringify({ error: "Email and password are required" }), 
@@ -22,11 +23,13 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       );
     }
 
+    // Attempt to sign in with email and password
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
+    // Handle invalid credentials
     if (error) {
       return new Response(
         JSON.stringify({ error: "Invalid email or password" }), 
@@ -37,8 +40,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       );
     }
 
+    // Store the session in cookies for subsequent requests
     setAuthCookies(cookies, data.session);
 
+    // Return success response
     return new Response(
       JSON.stringify({ success: true }), 
       { 
@@ -47,6 +52,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       }
     );
   } catch (error) {
+    // ... existing error handling ...
     return new Response(
       JSON.stringify({ error: "An unexpected error occurred" }), 
       { 

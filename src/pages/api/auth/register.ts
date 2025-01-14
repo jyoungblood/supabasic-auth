@@ -1,17 +1,18 @@
-// With `output: 'static'` configured:
-// export const prerender = false;
 import { createClient, setAuthCookies } from "../../../lib/supabase";
 import type { APIRoute } from "astro";
 
+// API endpoint for email/password registration
 export const POST: APIRoute = async ({ request, cookies }) => {
   try {
-    // Create server-side Supabase client with cookies
+    // Initialize Supabase client with server-side configuration
     const supabase = createClient.server(cookies);
     
+    // Extract registration details from form data
     const formData = await request.formData();
     const email = formData.get("email")?.toString();
     const password = formData.get("password")?.toString();
 
+    // Validate required fields
     if (!email || !password) {
       return new Response(JSON.stringify({ error: "Email and password are required" }), {
         status: 400,
@@ -19,6 +20,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       });
     }
 
+    // Attempt to create new user account
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -26,7 +28,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
     if (error) throw error;
 
-    // If registration is successful and session is available immediately
+    // If email confirmation is not required, set session cookies
     if (data.session) {
       setAuthCookies(cookies, data.session);
 
@@ -36,7 +38,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       });
     }
 
-    // If email confirmation is required
+    // If email confirmation is required, return appropriate response
     return new Response(JSON.stringify({ success: false }), {
       status: 200,
       headers: { "Content-Type": "application/json" }
