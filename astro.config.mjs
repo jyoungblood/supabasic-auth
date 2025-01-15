@@ -22,7 +22,7 @@ export default defineConfig({
         style-src 'self' 'unsafe-inline';
         img-src 'self' data: https: blob:;
         font-src 'self' 'https://fonts.googleapis.com';
-        connect-src 'self' ${import.meta.env.PUBLIC_SUPABASE_URL} wss://${ new URL(import.meta.env.PUBLIC_SUPABASE_URL).host };
+        connect-src 'self' https://*.supabase.co wss://*.supabase.co;
         form-action 'self';
         frame-ancestors 'none';
       `

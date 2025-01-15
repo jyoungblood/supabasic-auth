@@ -2,29 +2,28 @@
 import Layout from "../../layouts/Layout.astro";
 import { createClient } from "../../lib/supabase";
 
-export const prerender = false;
-
-const supabase = createClient.server(Astro.cookies);
+const supabase = createClient.astro(Astro);
 
 const { url, redirect } = Astro;
 
-// Get the token_hash and type from URL parameters
 const token_hash = url.searchParams.get("token_hash");
-const type = url.searchParams.get("type");
 
 let error = null;
 
-if (token_hash && type) {
-  const { data, error: verificationError } = await supabase.auth.verifyOtp({
+// Verify token if both token_hash and type are present
+if (token_hash) {
+  // Attempt to verify the OTP token
+  const { error: verificationError } = await supabase.auth.verifyOtp({
     token_hash,
     type: "signup",
   });
 
-  if (!verificationError) {
+  // Handle verification result
+  if (verificationError) {
+    error = verificationError.message;
+  } else {
     return redirect(`/login?success=${encodeURIComponent("Email verified successfully")}`);
   }
-
-  error = verificationError.message;
 }
 ---
 
