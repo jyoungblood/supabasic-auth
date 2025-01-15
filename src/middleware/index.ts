@@ -23,13 +23,8 @@ const validateSession = async (
   
   const supabase = createClient.server(cookies);
   
-  // First set the session
-  await supabase.auth.setSession({
-    refresh_token: refreshToken,
-    access_token: accessToken,
-  });
-  
-  // Then get the authenticated user
+  // Remove the session setting step as it's not needed
+  // We'll directly verify the user instead
   const { data: { user }, error } = await supabase.auth.getUser();
   
   if (error || !user) return null;
