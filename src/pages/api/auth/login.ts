@@ -40,10 +40,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       );
     }
 
-    // Store the session in cookies for subsequent requests
-    setAuthCookies(cookies, data.session);
+    // Set cookies before creating the response
+    await setAuthCookies(cookies, data.session);
 
-    // Return success response
+    // Create and return response after cookies are set
     return new Response(
       JSON.stringify({ success: true }), 
       { 

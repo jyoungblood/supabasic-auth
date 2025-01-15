@@ -8,6 +8,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     // Initialize Supabase client with server-side configuration
     const supabase = createClient.server(cookies);
     
+    // Get the request URL origin (protocol + domain)
+    const requestOrigin = new URL(request.url).origin;
+
     // Get the OAuth provider from form data
     const formData = await request.formData();
     const provider = formData.get("provider")?.toString();
@@ -19,7 +22,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider as Provider,
         options: {
-          redirectTo: `${import.meta.env.SITE_URL}/api/auth/callback`,
+          redirectTo: `${requestOrigin}/api/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent'
@@ -40,7 +43,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       }
 
       // Redirect user to the OAuth provider's consent page
-      console.log("Redirecting to:", data.url);
       return Response.redirect(data.url);
     }
 

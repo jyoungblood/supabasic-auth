@@ -26,11 +26,7 @@ const error = url.searchParams.get("error");
       >
     </p>
     <div class="w-full max-w-sm">
-      <form 
-        class="border border-gray-200 p-8 rounded-md mb-4" 
-        id="loginForm"
-        onsubmit="handleLoginSubmit(event)"
-      >
+      <form class="border border-gray-200 p-8 rounded-md mb-4" id="loginForm">
         <div class="flex flex-col mb-4">
           <label for="email" class="mb-2 text-sm font-semibold">Email</label>
           <input
@@ -154,34 +150,41 @@ const error = url.searchParams.get("error");
 </Layout>
 
 <script>
-  async function handleLoginSubmit(event) {
-    event.preventDefault();
+  const form = document.getElementById("loginForm");
+  const submitButton = document.getElementById("submitButton");
+  const buttonText = document.getElementById("buttonText");
+  const loadingSpinner = document.getElementById("loadingSpinner");
 
-    const submitButton = document.getElementById("submitButton");
-    const buttonText = document.getElementById("buttonText");
-    const loadingSpinner = document.getElementById("loadingSpinner");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
     // Disable button and show loading state
     submitButton.disabled = true;
     buttonText.textContent = "Logging in...";
     loadingSpinner.classList.remove("hidden");
 
-    try {
-      const formData = new FormData(event.target);
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
+    const formData = new FormData(event.target);
 
-      if (!response.ok) {
-        window.location.href = `/login?error=${encodeURIComponent(data.error)}`;
-        return;
-      }
-      window.location.href = "/dashboard";
-    } catch (error) {
-      console.error("Error:", error);
-      window.location.href = `/login?error=${encodeURIComponent("An unexpected error occurred")}`;
-    }
-  }
+    fetch("/api/auth/login", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) =>
+        response.json().then((data) => ({
+          status: response.ok,
+          data: data,
+        }))
+      )
+      .then(({ status, data }) => {
+        if (!status) {
+          window.location.href = `/login?error=${encodeURIComponent(data.error)}`;
+          return;
+        }
+        window.location.href = "/dashboard";
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        window.location.href = `/login?error=${encodeURIComponent("An unexpected error occurred")}`;
+      });
+  });
 </script>

@@ -12,7 +12,7 @@ import Layout from "../layouts/Layout.astro";
           class="underline hover:no-underline">Log in</a
         >
       </p>
-      <form class="border border-gray-200 p-8 rounded-md" id="registerForm" onsubmit="handleRegisterSubmit(event)">
+      <form class="border border-gray-200 p-8 rounded-md" id="registerForm">
         <div class="flex flex-col mb-4">
           <label for="email" class="mb-2 text-sm font-semibold">Email</label>
           <input
@@ -123,45 +123,52 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-  async function handleRegisterSubmit(event) {
-    event.preventDefault();
+  const form = document.getElementById("registerForm");
+  const submitButton = document.getElementById("submitButton");
+  const buttonText = document.getElementById("buttonText");
+  const loadingSpinner = document.getElementById("loadingSpinner");
+  const registerContainer = document.getElementById("registerContainer");
+  const verifyEmailContainer = document.getElementById("verifyEmailContainer");
 
-    const submitButton = document.getElementById("submitButton");
-    const buttonText = document.getElementById("buttonText");
-    const loadingSpinner = document.getElementById("loadingSpinner");
-    const registerContainer = document.getElementById("registerContainer");
-    const verifyEmailContainer = document.getElementById("verifyEmailContainer");
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
     // Disable button and show loading state
     submitButton.disabled = true;
     buttonText.textContent = "Registering...";
     loadingSpinner.classList.remove("hidden");
 
-    try {
-      const formData = new FormData(event.target);
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        body: formData,
+    const formData = new FormData(event.target);
+
+    fetch("/api/auth/register", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) =>
+        response.json().then((data) => ({
+          status: response.ok,
+          data: data,
+        }))
+      )
+      .then(({ status, data }) => {
+        if (!status) {
+          throw new Error(data.error || "An unexpected error occurred");
+        }
+
+        if (data.success) {
+          window.location.href = "/dashboard";
+        } else {
+          // Show verification message
+          registerContainer.classList.add("hidden");
+          verifyEmailContainer.classList.remove("hidden");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        submitButton.disabled = false;
+        buttonText.textContent = "Register";
+        loadingSpinner.classList.add("hidden");
+        window.location.href = `/register?error=${encodeURIComponent(error.message)}`;
       });
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "An unexpected error occurred");
-      }
-
-      if (data.success) {
-        window.location.href = "/dashboard";
-      } else {
-        // Show verification message
-        registerContainer.classList.add("hidden");
-        verifyEmailContainer.classList.remove("hidden");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      submitButton.disabled = false;
-      buttonText.textContent = "Register";
-      loadingSpinner.classList.add("hidden");
-      window.location.href = `/register?error=${encodeURIComponent(error.message)}`;
-    }
-  }
+  });
 </script>

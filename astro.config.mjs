@@ -15,19 +15,18 @@ export default defineConfig({
   }),
 
   server: {
-    headers: {
+    headers: import.meta.env.PROD ? {
       "Content-Security-Policy": `
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval';
-        style-src 'self' 'unsafe-inline';
-        img-src 'self' data: https: blob:;
-        font-src 'self' 'https://fonts.googleapis.com';
-        connect-src 'self' https://*.supabase.co wss://*.supabase.co;
-        form-action 'self';
+        default-src 'self' *.${import.meta.env.SITE_DOMAIN};
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' *.${import.meta.env.SITE_DOMAIN} https://accounts.google.com;
+        style-src 'self' 'unsafe-inline' *.${import.meta.env.SITE_DOMAIN};
+        img-src 'self' data: https: blob: *.${import.meta.env.SITE_DOMAIN} *.google.com *.googleapis.com;
+        font-src 'self' https://fonts.googleapis.com data: *.${import.meta.env.SITE_DOMAIN};
+        connect-src 'self' https://*.supabase.co wss://*.supabase.co *.${import.meta.env.SITE_DOMAIN} https://accounts.google.com;
+        form-action 'self' https://*.supabase.co *.${import.meta.env.SITE_DOMAIN} https://accounts.google.com;
+        frame-src 'self' https://accounts.google.com;
         frame-ancestors 'none';
-      `
-        .trim()
-        .replace(/\s+/g, " "),
-    },
+      `.trim().replace(/\s+/g, " "),
+    } : {},
   },
 });
