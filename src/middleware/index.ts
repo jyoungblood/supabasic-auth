@@ -21,13 +21,19 @@ const validateSession = async (
 ) => {
   if (!accessToken || !refreshToken) return null;
   
-  const { data, error } = await createClient.server(cookies).auth.setSession({
+  const supabase = createClient.server(cookies);
+  
+  // First set the session
+  await supabase.auth.setSession({
     refresh_token: refreshToken,
     access_token: accessToken,
   });
   
-  if (error) return null;
-  return data;
+  // Then get the authenticated user
+  const { data: { user }, error } = await supabase.auth.getUser();
+  
+  if (error || !user) return null;
+  return { user };
 };
 
 // Helper to set user data in locals
@@ -47,28 +53,30 @@ export const onRequest = defineMiddleware(
     const refreshToken = cookies.get("sb-refresh-token")?.value;
 
     // Try to validate session for all routes
-    const sessionData = await validateSession(cookies, accessToken, refreshToken);
-    if (sessionData) {
-      setUserData(locals, sessionData);
+    const userData = await validateSession(cookies, accessToken, refreshToken);
+    if (userData) {
+      setUserData(locals, userData);
     }
 
     // Handle protected routes
     if (matchesAny(url.pathname, protectedRoutes)) {
-      if (!sessionData) {
+      if (!userData) {
         cookies.delete("sb-access-token", { path: "/" });
         cookies.delete("sb-refresh-token", { path: "/" });
         return redirect("/login");
       }
 
-      // Refresh cookies
-      setAuthCookies(cookies, {
-        access_token: sessionData.session?.access_token!,
-        refresh_token: sessionData.session?.refresh_token!
-      });
+      // Refresh cookies if needed
+      if (accessToken) {
+        setAuthCookies(cookies, {
+          access_token: accessToken,
+          refresh_token: refreshToken!
+        });
+      }
     }
 
     // Handle redirect routes
-    if (matchesAny(url.pathname, redirectRoutes) && sessionData) {
+    if (matchesAny(url.pathname, redirectRoutes) && userData) {
       return redirect("/");
     }
 

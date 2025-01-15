@@ -123,14 +123,14 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-  const form = document.getElementById("registerForm");
-  const submitButton = document.getElementById("submitButton");
-  const buttonText = document.getElementById("buttonText");
-  const loadingSpinner = document.getElementById("loadingSpinner");
-  const registerContainer = document.getElementById("registerContainer");
-  const verifyEmailContainer = document.getElementById("verifyEmailContainer");
+  const form = document.getElementById("registerForm") as HTMLFormElement;
+  const submitButton = document.getElementById("submitButton") as HTMLButtonElement;
+  const buttonText = document.getElementById("buttonText") as HTMLSpanElement;
+  const loadingSpinner = document.getElementById("loadingSpinner") as HTMLElement;
+  const registerContainer = document.getElementById("registerContainer") as HTMLDivElement;
+  const verifyEmailContainer = document.getElementById("verifyEmailContainer") as HTMLDivElement;
 
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", async (event: SubmitEvent) => {
     event.preventDefault();
 
     // Set loading state
@@ -141,7 +141,7 @@ import Layout from "../layouts/Layout.astro";
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
-        body: new FormData(event.target),
+        body: new FormData(event.target as HTMLFormElement),
       });
 
       const data = await response.json();
@@ -155,7 +155,7 @@ import Layout from "../layouts/Layout.astro";
         ? window.location.href = "/dashboard"
         : showVerificationMessage();
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
       window.location.href = `/register?error=${encodeURIComponent(error.message)}`;
     }

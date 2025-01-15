@@ -150,12 +150,12 @@ const error = url.searchParams.get("error");
 </Layout>
 
 <script>
-  const form = document.getElementById("loginForm");
-  const submitButton = document.getElementById("submitButton");
-  const buttonText = document.getElementById("buttonText");
-  const loadingSpinner = document.getElementById("loadingSpinner");
+  const form = document.getElementById("loginForm") as HTMLFormElement;
+  const submitButton = document.getElementById("submitButton") as HTMLButtonElement;
+  const buttonText = document.getElementById("buttonText") as HTMLSpanElement;
+  const loadingSpinner = document.getElementById("loadingSpinner") as HTMLElement;
 
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", async (event: SubmitEvent) => {
     event.preventDefault();
 
     // Set loading state
@@ -166,7 +166,7 @@ const error = url.searchParams.get("error");
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        body: new FormData(event.target),
+        body: new FormData(event.target as HTMLFormElement),
       });
 
       const data = await response.json();
@@ -175,7 +175,7 @@ const error = url.searchParams.get("error");
         ? "/dashboard"
         : `/login?error=${encodeURIComponent(data.error)}`;
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
       window.location.href = `/login?error=${encodeURIComponent("An unexpected error occurred")}`;
     }
