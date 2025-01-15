@@ -28,27 +28,24 @@ if (token_hash) {
 ---
 
 <Layout title="Confirm Email">
-  <div class="flex flex-col items-center justify-center flex-1">
+  <div class="flex flex-col items-center justify-center flex-1 p-4">
     {
       error ? (
         <div 
-          class="border border-gray-200 p-8 rounded-md"
+          class="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded-md text-center w-full max-w-sm"
           role="alert"
           aria-live="assertive"
         >
-          <h1 class="text-xl font-bold mb-2">Error</h1>
-          <p class="text-sm">{error}</p>
+          <p class="font-semibold">{error}</p>
         </div>
       ) : (
         <div 
-          class="border border-gray-200 p-8 rounded-md"
+          class="mb-6 p-4 border border-gray-200 rounded-md text-center w-full max-w-sm focus:outline-none"
           role="status"
           aria-live="polite"
         >
-          <h1 class="text-xl font-bold mb-2">Verifying your email...</h1>
-          <p class="text-sm">
-            Please wait while we confirm your email address.
-          </p>
+          <h2 class="text-xl font-bold mb-2">Verifying your email...</h2>
+          <p class="text-sm">Please wait while we confirm your email address.</p>
         </div>
       )
     }

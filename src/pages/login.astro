@@ -91,11 +91,11 @@ const error = url.searchParams.get("error");
         {
           error && (
             <div 
-              class="mt-4 text-red-700 text-sm font-semibold text-center"
+              class="mt-6 text-sm p-2 bg-red-100 border border-red-300 text-red-700 rounded-md text-center w-full max-w-sm"
               role="alert"
               aria-live="assertive"
             >
-              {decodeURIComponent(error)}
+              <p class="font-semibold">{decodeURIComponent(error)}</p>
             </div>
           )
         }
