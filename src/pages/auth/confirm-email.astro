@@ -31,12 +31,20 @@ if (token_hash) {
   <div class="flex flex-col items-center justify-center flex-1">
     {
       error ? (
-        <div class="border border-gray-200 p-8 rounded-md">
+        <div 
+          class="border border-gray-200 p-8 rounded-md"
+          role="alert"
+          aria-live="assertive"
+        >
           <h1 class="text-xl font-bold mb-2">Error</h1>
           <p class="text-sm">{error}</p>
         </div>
       ) : (
-        <div class="border border-gray-200 p-8 rounded-md">
+        <div 
+          class="border border-gray-200 p-8 rounded-md"
+          role="status"
+          aria-live="polite"
+        >
           <h1 class="text-xl font-bold mb-2">Verifying your email...</h1>
           <p class="text-sm">
             Please wait while we confirm your email address.

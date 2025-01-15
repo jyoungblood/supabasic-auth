@@ -4,15 +4,20 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout title="Register">
   <div class="flex flex-col items-center justify-center flex-1">
-    <div id="registerContainer" class="w-full max-w-sm">
+    <div data-register-container class="w-full max-w-sm" role="region" aria-label="Registration form">
       <h1 class="text-2xl font-bold mb-2 text-center">Register</h1>
-      <p class="mb-6 text-center text-sm">
+      <p class="mb-6 text-center text-sm" id="login-link">
         Already have an account? <a
           href="/login"
-          class="underline hover:no-underline">Log in</a
+          class="underline hover:no-underline"
+          aria-describedby="login-link">Log in</a
         >
       </p>
-      <form class="border border-gray-200 p-8 rounded-md" id="registerForm">
+      <form 
+        class="border border-gray-200 p-8 rounded-md" 
+        data-register-form
+        aria-label="Email registration form"
+      >
         <div class="flex flex-col mb-4">
           <label for="email" class="mb-2 text-sm font-semibold">Email</label>
           <input
@@ -21,31 +26,34 @@ import Layout from "../layouts/Layout.astro";
             id="email"
             required
             class="p-2 border border-gray-400 rounded-md mb-4"
+            aria-required="true"
           />
         </div>
         <div class="flex flex-col mb-4">
-          <label for="password" class="mb-2 text-sm font-semibold"
-            >Password</label
-          >
+          <label for="password" class="mb-2 text-sm font-semibold">Password</label>
           <input
             type="password"
             name="password"
             id="password"
             required
             class="p-2 border border-gray-400 rounded-md mb-4"
+            aria-required="true"
           />
         </div>
         <input type="hidden" name="provider" value="email" />
         <button
           type="submit"
-          id="submitButton"
+          data-register-submit
           class="bg-black text-white p-3 text-sm font-semibold rounded-md hover:bg-gray-800 cursor-pointer w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          aria-busy="false"
         >
-          <span id="buttonText">Register</span>
+          <span data-register-text>Register</span>
           <svg
-            id="loadingSpinner"
+            data-register-spinner
             class="hidden w-5 h-5 ml-2 animate-spin"
             viewBox="0 0 24 24"
+            aria-hidden="true"
+            role="presentation"
           >
             <circle
               class="opacity-25"
@@ -64,28 +72,31 @@ import Layout from "../layouts/Layout.astro";
         </button>
       </form>
 
-      <hr class="h-0 border-t mt-8 border-gray-300" />
+      <hr class="h-0 border-t mt-8 border-gray-300" role="separator" aria-label="or continue with" />
       <p class="-mt-2 text-xs text-center text-gray-500">
         <span class="bg-white px-2">OR</span>
       </p>
 
-      
       <form
         action="/api/auth/register-oauth"
         method="post"
         class="w-full max-w-md mt-4 flex flex-col gap-2"
+        aria-label="Social login options"
       >
         <button
           value="google"
           name="provider"
           class="w-full p-3 border border-gray-300 hover:bg-gray-50 flex justify-center items-center gap-2 rounded-md mt-2 text-gray-900 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed"
           type="submit"
+          aria-label="Continue with Google"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-auto"
             preserveAspectRatio="xMidYMid"
             viewBox="0 0 256 262"
+            aria-hidden="true"
+            role="presentation"
           >
             <path
               fill="#4285F4"
@@ -106,13 +117,17 @@ import Layout from "../layouts/Layout.astro";
           </svg>
           Continue with Google
         </button>
-
       </form>
     </div>
 
-    <div id="verifyEmailContainer" class="hidden w-full max-w-sm">
+    <div 
+      data-register-verify-container 
+      class="hidden w-full max-w-sm"
+      role="status"
+      aria-live="polite"
+    >
       <div class="border border-gray-200 p-8 rounded-md">
-        <h1 class="text-xl font-bold mb-2">Verify your email</h1>
+        <h2 class="text-xl font-bold mb-2">Verify your email</h2>
         <p class="text-sm">
           We've sent a verification email to your inbox. Please check your email
           and click the link to verify your account.
@@ -123,18 +138,19 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-  const form = document.getElementById("registerForm") as HTMLFormElement;
-  const submitButton = document.getElementById("submitButton") as HTMLButtonElement;
-  const buttonText = document.getElementById("buttonText") as HTMLSpanElement;
-  const loadingSpinner = document.getElementById("loadingSpinner") as HTMLElement;
-  const registerContainer = document.getElementById("registerContainer") as HTMLDivElement;
-  const verifyEmailContainer = document.getElementById("verifyEmailContainer") as HTMLDivElement;
+  const form = document.querySelector('[data-register-form]') as HTMLFormElement;
+  const submitButton = document.querySelector('[data-register-submit]') as HTMLButtonElement;
+  const buttonText = document.querySelector('[data-register-text]') as HTMLSpanElement;
+  const loadingSpinner = document.querySelector('[data-register-spinner]') as HTMLElement;
+  const registerContainer = document.querySelector('[data-register-container]') as HTMLDivElement;
+  const verifyEmailContainer = document.querySelector('[data-register-verify-container]') as HTMLDivElement;
 
   form.addEventListener("submit", async (event: SubmitEvent) => {
     event.preventDefault();
 
     // Set loading state
     submitButton.disabled = true;
+    submitButton.setAttribute('aria-busy', 'true');
     buttonText.textContent = "Registering...";
     loadingSpinner.classList.remove("hidden");
 
@@ -151,19 +167,27 @@ import Layout from "../layouts/Layout.astro";
       }
 
       // Handle successful registration
-      data.success 
-        ? window.location.href = "/dashboard"
-        : showVerificationMessage();
+      if (data.success) {
+        window.location.href = "/dashboard";
+      } else {
+        showVerificationMessage();
+      }
 
     } catch (error: any) {
       console.error("Error:", error);
       window.location.href = `/register?error=${encodeURIComponent(error.message)}`;
+    } finally {
+      // Reset loading state if there's an error
+      submitButton.disabled = false;
+      submitButton.setAttribute('aria-busy', 'false');
     }
   });
 
   function showVerificationMessage() {
     registerContainer.classList.add("hidden");
     verifyEmailContainer.classList.remove("hidden");
+    // Move focus to verification container
+    verifyEmailContainer.setAttribute('tabindex', '-1');
+    verifyEmailContainer.focus();
   }
-
 </script>
