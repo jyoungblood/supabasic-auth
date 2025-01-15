@@ -130,45 +130,40 @@ import Layout from "../layouts/Layout.astro";
   const registerContainer = document.getElementById("registerContainer");
   const verifyEmailContainer = document.getElementById("verifyEmailContainer");
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    // Disable button and show loading state
+    // Set loading state
     submitButton.disabled = true;
     buttonText.textContent = "Registering...";
     loadingSpinner.classList.remove("hidden");
 
-    const formData = new FormData(event.target);
-
-    fetch("/api/auth/register", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) =>
-        response.json().then((data) => ({
-          status: response.ok,
-          data: data,
-        }))
-      )
-      .then(({ status, data }) => {
-        if (!status) {
-          throw new Error(data.error || "An unexpected error occurred");
-        }
-
-        if (data.success) {
-          window.location.href = "/dashboard";
-        } else {
-          // Show verification message
-          registerContainer.classList.add("hidden");
-          verifyEmailContainer.classList.remove("hidden");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        submitButton.disabled = false;
-        buttonText.textContent = "Register";
-        loadingSpinner.classList.add("hidden");
-        window.location.href = `/register?error=${encodeURIComponent(error.message)}`;
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        body: new FormData(event.target),
       });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "An unexpected error occurred");
+      }
+
+      // Handle successful registration
+      data.success 
+        ? window.location.href = "/dashboard"
+        : showVerificationMessage();
+
+    } catch (error) {
+      console.error("Error:", error);
+      window.location.href = `/register?error=${encodeURIComponent(error.message)}`;
+    }
   });
+
+  function showVerificationMessage() {
+    registerContainer.classList.add("hidden");
+    verifyEmailContainer.classList.remove("hidden");
+  }
+
 </script>
