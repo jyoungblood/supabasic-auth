@@ -1,4 +1,4 @@
-# Supabasic Auth
+# Supabasic Auth for Astro
 
 A minimalist, security-focused authentication starter for Astro + Supabase. Provides complete SSR authentication flows with a focus on best practices and accessibility. Perfect for developers who want a solid auth foundation without the bloat.
 
